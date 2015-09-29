@@ -1,0 +1,6 @@
+2015-09-29 Roland Wunderling <bzfwunde@gmail.com>
+ * added support for different chats on different dokuwiki pages
+   via {{chat>}} notation
+
+2015-09-29 Roland Wunderling <bzfwunde@gmail.com>
+ * installed original plugin by Luigi Micco in github
