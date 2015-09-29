@@ -25,19 +25,33 @@ class syntax_plugin_freechat extends DokuWiki_Syntax_Plugin {
 	function getAllowedTypes() { return array('substition','protected','disabled','formatting'); }
 	function getSort(){ return 315; }
 	function getPType(){ return 'block'; }
+
   function connectTo($mode) {
       $this->Lexer->addSpecialPattern('~~CHAT~~', $mode, 'plugin_freechat');
+      $this->Lexer->addSpecialPattern('\{\{chat>[^}]*\}\}', $mode, 'plugin_freechat');
   }
 
+  /* parse paramters (if used as {{chat>[chatid=...|rooms=...[,...]]}}) */
   function handle($match, $state, $pos, &$handler) {
-    
-    $match = substr($match, 2, -2); // strip markup
-    return array($match); 
+    if ( $match == '~~CHAT~~' )
+       return array();
 
+    $match = substr($match, 7, -2); // strip markup
+    $params = explode('|',$match);
+    // provide easy access to parameters param=value
+    $data = array();
+    foreach ($params as $p) {
+        $splitparam = explode('=',$p);
+        if ( isset($splitparam[1]) )
+           $data[$splitparam[0]] = $splitparam[1];
+        else
+           $data[$splitparam[0]] = '';
+    }
+    return $data;
   }
     
-	function render($mode, &$renderer, $data){
-		global $conf, $USERINFO, $ID;
+  function render($mode, &$renderer, $data){
+          global $conf, $USERINFO, $ID;
 
     if(auth_quickaclcheck($ID) >= AUTH_READ) {
       if($mode == 'xhtml'){
@@ -48,18 +62,27 @@ class syntax_plugin_freechat extends DokuWiki_Syntax_Plugin {
         require_once DOKU_INC.'lib/plugins/freechat/phpfreechat/src/phpfreechat.class.php';
 
         $params = array();
+
         $params['serverid'] = md5($conf['title']); 
+        if ( isset ($data['chatid'])  && $data['chatid'] != '' )
+           $params['serverid'] = md5($data['chatid']); 
+
         $params['focus_on_connect'] = true;
         
         $params['language'] = $this->getConf('language');
         $params['theme'] = $this->getConf('template');
         $params['height'] = $this->getConf('height').'px'; 
         $params["title"] = $this->getConf('title'); 
-        $params["channels"] = explode(',', $this->getConf('channels'));
+        if ( isset ($data['rooms']) )
+           $params["channels"] = explode(',', $data['rooms']);
+        else
+           $params["channels"] = explode(',', $this->getConf('channels'));
         $params['frozen_nick'] = $this->getConf('frozen_nick');
-        if ($this->getConf('frozen_channels') != '') {
+        $params['frozen_nick'] = !($params['frozen_nick'] == 'off'  ||  $params['frozen_nick'] == 0);
+        if ( isset ($data['locked']) )
+          $params['frozen_channels'] = explode(',', $data['locked']);
+        else if ($this->getConf('frozen_channels') != '')
           $params['frozen_channels'] = explode(',', $this->getConf('frozen_channels'));
-        }  
         
         $params['isadmin']  = false;
         if (($this->getConf('admin_group') != '') && isset($USERINFO['grps'])) {
@@ -115,6 +138,7 @@ echo "<pre>";
 print_r($params);
 echo "</pre>";
 */
+
         return true;
       }
     }
