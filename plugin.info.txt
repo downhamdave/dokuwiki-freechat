@@ -1,0 +1,8 @@
+base   freechat
+author Luigi Micco, Roland Wunderling
+email  l.micco@tiscali.it, bzfwunde@gmail.com
+date   2015-09-29
+name   Freechat Plugin for DokuWiki
+desc   Allows to include add chat window functionality to your wiki pages.
+url    https://github.com/bzfwunde/dokuwiki-freechat
+
