@@ -11,7 +11,7 @@ Please refer to http://www.dokuwiki.org/plugins for additional info
 on how to install plugins in DokuWiki.
 
 ----
-Copyright (C) Luigi Micco <l[dot]micco[at]tiscali[dot]it>
+Copyright (C) Roland Wunderling <bzfwunde@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
